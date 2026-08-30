@@ -136,6 +136,44 @@ def cmd_compare(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_ask(args: argparse.Namespace) -> int:
+    """Pipeline RAG utuh: cari chunk, lalu susun jawaban darinya."""
+    from rag.generate import answer
+
+    retriever = open_retriever(args.embedder)
+    mode = args.mode if retriever.can_dense else "bm25"
+    hits = retriever.search(args.query, k=args.k, mode=mode)
+
+    print(f"Pertanyaan : {args.query}")
+    print(f"Retrieval  : {mode}, {len(hits)} chunk\n")
+    print("-" * 88)
+
+    result = answer(args.query, hits, on_text=lambda text: print(text, end="", flush=True))
+
+    # Dalam mode retrieval-only teksnya belum tercetak, karena tidak ada aliran.
+    if not result.generated:
+        print(result.text)
+    print("\n" + "-" * 88)
+
+    if result.refused:
+        print(f"\nDitolak. {result.refusal_reason or ''}".rstrip())
+        return 1
+
+    if result.citations:
+        print(f"\nSitasi ({len(result.citations)}), dikembalikan API dan bukan karangan model:")
+        for citation in result.citations:
+            quote = " ".join(citation.cited_text.split())[:110]
+            print(f"  - {citation.document_title}")
+            print(f'      "{quote}..."')
+
+        used = result.cited_hits()
+        print(f"\nSumber terpakai: {len(used)} dari {len(hits)} chunk yang dikirim.")
+        for hit in used:
+            print(f"  - {hit.chunk.context_header()}  {hit.chunk.url}")
+
+    return 0
+
+
 def cmd_info(args: argparse.Namespace) -> int:
     index = index_module.load()
     print(index.describe())
@@ -170,6 +208,7 @@ def main(argv: list[str] | None = None) -> int:
 
     for name, handler, help_text in (
         ("search", cmd_search, "cari chunk yang relevan"),
+        ("ask", cmd_ask, "pipeline RAG utuh: cari lalu jawab"),
         ("compare", cmd_compare, "bandingkan dense, bm25, dan hybrid berdampingan"),
     ):
         sub = subparsers.add_parser(name, help=help_text)
@@ -181,7 +220,7 @@ def main(argv: list[str] | None = None) -> int:
             default="auto",
             help="default 'auto' mengikuti embedder yang dipakai saat index dibangun",
         )
-        if name == "search":
+        if name in ("search", "ask"):
             sub.add_argument(
                 "--mode",
                 choices=["hybrid", "dense", "bm25"],
