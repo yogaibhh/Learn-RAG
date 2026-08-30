@@ -60,6 +60,15 @@ LOCAL_MODEL = "jinaai/jina-embeddings-v5-text-nano"
 
 CLAUDE_MODEL = "claude-opus-5"
 
+# Groq dipilih dari uji langsung di korpus ini, bukan dari dokumentasi:
+#   openai/gpt-oss-120b  jawaban paling lengkap, Bahasa Indonesia rapi, ~1,3 detik
+#   qwen/qwen3.8-27b     cepat tapi sering memangkas detail
+#   qwen/qwen3.6-27b     membocorkan blok <think> ke jawaban -- jangan dipakai
+#   groq/compound-mini   bagus, tapi punya web search bawaan sehingga bisa
+#                        menarik informasi dari luar dokumen. Itu merusak
+#                        seluruh premis RAG, jadi dihindari.
+GROQ_MODEL = "openai/gpt-oss-120b"
+
 
 def jina_api_key() -> str | None:
     return os.getenv("JINA_API_KEY") or None
@@ -67,3 +76,7 @@ def jina_api_key() -> str | None:
 
 def anthropic_api_key() -> str | None:
     return os.getenv("ANTHROPIC_API_KEY") or None
+
+
+def groq_api_key() -> str | None:
+    return os.getenv("GROQ_API_KEY") or None
