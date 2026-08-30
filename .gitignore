@@ -1,0 +1,24 @@
+# Rahasia
+.env
+
+# Hasil turunan (bisa dibangun ulang dari data/raw)
+data/index/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
