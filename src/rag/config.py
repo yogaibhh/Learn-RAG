@@ -45,6 +45,10 @@ USER_AGENT = "rag-wikipedia-id/0.1 (https://github.com/yogaibhh/Learn-RAG)"
 CHUNK_TARGET_CHARS = 1200
 CHUNK_OVERLAP_CHARS = 200
 
+# Chunk lebih pendek dari ini digabung ke tetangganya. Potongan sependek satu
+# kalimat hampir selalu jadi hasil pencarian yang menyesatkan.
+MIN_CHUNK_CHARS = 150
+
 # --- Embedding --------------------------------------------------------------
 
 JINA_API_URL = "https://api.jina.ai/v1/embeddings"
