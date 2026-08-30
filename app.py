@@ -116,14 +116,24 @@ def main() -> None:
     if not result.generated:
         placeholder.empty()
         st.info(
-            "Mode retrieval-only: ANTHROPIC_API_KEY belum diisi, jadi tahap "
-            "penyusunan jawaban dilewati. Chunk hasil pencarian ada di bawah."
+            "Mode retrieval-only: tidak ada GROQ_API_KEY maupun ANTHROPIC_API_KEY, "
+            "jadi tahap penyusunan jawaban dilewati. Chunk hasil pencarian ada di bawah."
         )
     elif result.refused:
         placeholder.empty()
         st.error(f"Permintaan ditolak. {result.refusal_reason or ''}".strip())
     else:
         placeholder.markdown(result.text)
+        st.caption(f"Dijawab oleh {result.provider} · {result.model}")
+
+    # Penanda yang menunjuk dokumen di luar yang dikirim: model mengarang nomor.
+    if result.hallucinated_markers:
+        markers = ", ".join(f"[{n}]" for n in result.hallucinated_markers)
+        st.warning(
+            f"Model menyebut sumber {markers}, padahal cuma ada {len(hits)} dokumen "
+            "yang dikirim. Penanda itu karangan, dan ini persis alasan sitasi "
+            "berbasis prompt perlu diverifikasi."
+        )
 
     if result.citations:
         st.subheader(f"Sitasi ({len(result.citations)})")
@@ -134,8 +144,12 @@ def main() -> None:
 
     cited_ids = {hit.chunk.id for hit in result.cited_hits()}
     st.subheader(f"Chunk yang ditemukan ({len(hits)})")
-    if result.generated and result.citations:
-        st.caption(f"{len(cited_ids)} dari {len(hits)} chunk benar-benar terpakai dalam jawaban.")
+    if result.generated and cited_ids:
+        kind = "sitasi terverifikasi API" if result.has_verified_citations else "penanda tervalidasi"
+        st.caption(
+            f"{len(cited_ids)} dari {len(hits)} chunk benar-benar terpakai "
+            f"dalam jawaban ({kind})."
+        )
 
     for hit in hits:
         render_hit(hit, cited=hit.chunk.id in cited_ids)
