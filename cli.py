@@ -140,15 +140,24 @@ def cmd_ask(args: argparse.Namespace) -> int:
     """Pipeline RAG utuh: cari chunk, lalu susun jawaban darinya."""
     from rag.generate import answer
 
+    from rag.generate import choose_provider
+
     retriever = open_retriever(args.embedder)
     mode = args.mode if retriever.can_dense else "bm25"
     hits = retriever.search(args.query, k=args.k, mode=mode)
 
+    provider = choose_provider(args.provider)
     print(f"Pertanyaan : {args.query}")
-    print(f"Retrieval  : {mode}, {len(hits)} chunk\n")
+    print(f"Retrieval  : {mode}, {len(hits)} chunk")
+    print(f"Generation : {provider}\n")
     print("-" * 88)
 
-    result = answer(args.query, hits, on_text=lambda text: print(text, end="", flush=True))
+    result = answer(
+        args.query,
+        hits,
+        provider=args.provider,
+        on_text=lambda text: print(text, end="", flush=True),
+    )
 
     # Dalam mode retrieval-only teksnya belum tercetak, karena tidak ada aliran.
     if not result.generated:
@@ -159,6 +168,14 @@ def cmd_ask(args: argparse.Namespace) -> int:
         print(f"\nDitolak. {result.refusal_reason or ''}".rstrip())
         return 1
 
+    # Penanda yang menunjuk dokumen di luar yang dikirim: model mengarang nomor.
+    if result.hallucinated_markers:
+        markers = ", ".join(f"[{n}]" for n in result.hallucinated_markers)
+        print(
+            f"\n⚠  Model menyebut sumber {markers}, padahal cuma ada "
+            f"{len(hits)} dokumen yang dikirim. Penanda itu karangan."
+        )
+
     if result.citations:
         print(f"\nSitasi ({len(result.citations)}), dikembalikan API dan bukan karangan model:")
         for citation in result.citations:
@@ -166,10 +183,14 @@ def cmd_ask(args: argparse.Namespace) -> int:
             print(f"  - {citation.document_title}")
             print(f'      "{quote}..."')
 
-        used = result.cited_hits()
-        print(f"\nSumber terpakai: {len(used)} dari {len(hits)} chunk yang dikirim.")
-        for hit in used:
-            print(f"  - {hit.chunk.context_header()}  {hit.chunk.url}")
+    used = result.cited_hits()
+    if used:
+        kind = "terverifikasi API" if result.has_verified_citations else "penanda tervalidasi"
+        print(f"\nSumber terpakai ({kind}): {len(used)} dari {len(hits)} chunk yang dikirim.")
+        for index, hit in enumerate(result.hits):
+            if index in set(result.cited_indices):
+                print(f"  [{index + 1}] {hit.chunk.context_header()}")
+                print(f"      {hit.chunk.url}")
 
     return 0
 
@@ -226,6 +247,14 @@ def main(argv: list[str] | None = None) -> int:
                 choices=["hybrid", "dense", "bm25"],
                 default="hybrid",
                 help="metode pencarian (default hybrid)",
+            )
+        if name == "ask":
+            sub.add_argument(
+                "--provider",
+                choices=["auto", "groq", "claude", "none"],
+                default="auto",
+                help="penyedia jawaban; 'auto' memilih Groq kalau keynya ada, "
+                "lalu Claude, lalu mode retrieval-only",
             )
         sub.set_defaults(func=handler)
 

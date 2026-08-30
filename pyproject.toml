@@ -11,6 +11,7 @@ dependencies = [
     "rank-bm25>=0.2.2",
     "anthropic>=0.40",
     "streamlit>=1.40",
+    "groq>=1.7.0",
 ]
 
 [project.optional-dependencies]
