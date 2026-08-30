@@ -1,0 +1,15 @@
+{"id": "q01", "question": "Siapa pendiri dan CEO Anthropic?", "relevant_docs": ["wiki-4665301", "wiki-4407884"], "jenis": "nama diri"}
+{"id": "q02", "question": "Apa itu musim dingin kecerdasan buatan?", "relevant_docs": ["wiki-4505936"], "jenis": "definisi"}
+{"id": "q03", "question": "Kenapa model bahasa besar bisa mengarang fakta yang terdengar meyakinkan?", "relevant_docs": ["wiki-4356143"], "jenis": "parafrase"}
+{"id": "q04", "question": "Bagaimana perkembangan kecerdasan buatan di Indonesia?", "relevant_docs": ["wiki-4518882"], "jenis": "spesifik wilayah"}
+{"id": "q05", "question": "Apa dampak kecerdasan buatan terhadap lingkungan dan konsumsi energi?", "relevant_docs": ["wiki-4513961"], "jenis": "definisi"}
+{"id": "q06", "question": "Apa itu ChatGPT dan siapa yang membuatnya?", "relevant_docs": ["wiki-3777198", "wiki-2658194"], "jenis": "nama diri"}
+{"id": "q07", "question": "Cara komputer belajar sendiri dari contoh tanpa diprogram aturannya satu per satu", "relevant_docs": ["wiki-952724"], "jenis": "parafrase"}
+{"id": "q08", "question": "Apa risiko eksistensial yang bisa ditimbulkan kecerdasan buatan bagi umat manusia?", "relevant_docs": ["wiki-2606483", "wiki-4309082"], "jenis": "definisi"}
+{"id": "q09", "question": "Apa perbedaan kecerdasan buatan simbolik dengan pendekatan lain?", "relevant_docs": ["wiki-4642554"], "jenis": "perbandingan"}
+{"id": "q10", "question": "Bagaimana aturan hukum dan regulasi mengenai kecerdasan buatan?", "relevant_docs": ["wiki-4181295"], "jenis": "definisi"}
+{"id": "q11", "question": "Apa itu pemelajaran pengukuhan atau reinforcement learning?", "relevant_docs": ["wiki-4196318"], "jenis": "definisi"}
+{"id": "q12", "question": "Siapa saja yang menandatangani surat terbuka untuk menghentikan eksperimen AI besar?", "relevant_docs": ["wiki-4647749", "wiki-4647741"], "jenis": "nama diri"}
+{"id": "q13", "question": "Bagaimana kecerdasan buatan dipakai untuk keperluan militer?", "relevant_docs": ["wiki-4461297"], "jenis": "spesifik domain"}
+{"id": "q14", "question": "Apa masalah hak cipta yang muncul dari karya yang dihasilkan mesin?", "relevant_docs": ["wiki-4181348", "wiki-3995652"], "jenis": "parafrase"}
+{"id": "q15", "question": "Apa itu kecerdasan buatan umum atau AGI?", "relevant_docs": ["wiki-2563179", "wiki-3394131"], "jenis": "definisi"}
